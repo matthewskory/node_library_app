@@ -1,46 +1,27 @@
 var express = require('express');
+
 var app = express();
 
 var port = process.env.PORT ||5000;
-var bookRouter = express.Router();
 
-app.use(express.static('public'));
-app.set('views', './src/views');
-app.set('view engine', 'ejs'); //sets view engine to ejs
-
-var books =[
-{
-	title: "Sevenes",
-	author: "Neal Stephenson"
-},
-{
-	title: "Wool",
-	author: "Hugh Howey"
-}
-];
-
-bookRouter.route('/')
-	.get(function(req, res){
-		res.render('books',{
-		title: "Books",
-		nav: [{
+var nav = [{
 			Link:'/Books',
 			Text: 'Books'
 		},
 		{
 			Link: '/Authors',
 			Text:'Authors'
-		}],
-		books: books
-	});
-});
-
-bookRouter.route('/single')
-	.get(function(req, res){
-		res.send("hello single book");
-	});
+		}];
+var bookRouter = require('./src/routes/bookRoutes.js')(nav); //passing the nav var into the bookrouter function on bookRoutes.js
+var adminrouter = require('./src/routes/adminRoutes.js')(nav); //
 
 app.use('/Books', bookRouter);
+app.use('/Admin', adminrouter);
+
+app.use(express.static('public'));
+app.set('views', './src/views');
+
+app.set('view engine', 'ejs'); //sets view engine to ejs
 
 app.get('/', function(req, res){
 	res.render('index',{
